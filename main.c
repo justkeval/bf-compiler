@@ -9,27 +9,33 @@
 #include "parser.c"
 #include "optimizer.c"
 #include "compiler.c"
+#include "compiler_config.h"
+#include "program_options.c"
 
-bool compile_source_to_c(StrBuf* source, StrBuf* c_code, Errors* errors);
+bool compile_source_to_c(StrBuf* source, StrBuf* c_code, CompilerConfig config, Errors* errors);
 
 int main(int argc, char** argv) {
-    char* program = argv[0];
+    ProgramOptions defaults = {
+        .output_filepath = "out.c",
+        .memory_size = 30000,
+        .cell_size = 32
+    };
+    ProgramOptions opt = parse_options(argc, argv, defaults);
 
-    if (argc < 2) {
-        fprintf(stderr, "Error: No source file provided.\n");
-        fprintf(stderr, "Usage:\n");
-        fprintf(stderr, "  %s <program.b>\n", program);
-        return 1;
+    StrBuf source = {0};
+    char* err;
+    if (!read_file(opt.source_filepath, &source, &err)) {
+        fprintf(stderr, "Error opening file %s: %s", opt.source_filepath, err);
+        exit(1);
     }
 
-    char* source_filepath = argv[1];
-    
-    StrBuf source = {0};
-    read_file(source_filepath, &source);
-
+    CompilerConfig config = {
+        .memory_size = opt.memory_size,
+        .cell_size = opt.cell_size,
+    };
     StrBuf c_code = {0};
-    Errors errors = {0};    
-    if (!compile_source_to_c(&source, &c_code, &errors)) {
+    Errors errors = {0};
+    if (!compile_source_to_c(&source, &c_code, config, &errors)) {
         for (int i = 0; i < errors.len; i++) {
             Error err = errors.items[i];
             fprintf(stderr, "Error at position %d: %s\n", err.pos, err.message);
@@ -37,8 +43,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    const char* output_filepath = "out.c";
-    write_file(output_filepath, &c_code);
+    write_file(opt.output_filepath, &c_code);
 
     free(source.items);
     free(c_code.items);
@@ -46,7 +51,7 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-bool compile_source_to_c(StrBuf* source, StrBuf* c_code, Errors* errors) {
+bool compile_source_to_c(StrBuf* source, StrBuf* c_code, CompilerConfig config, Errors* errors) {
     
     Commands cmds = {0};
     if (!source_to_ir(source, &cmds, errors)) {
@@ -56,7 +61,7 @@ bool compile_source_to_c(StrBuf* source, StrBuf* c_code, Errors* errors) {
     Commands optimized = {0};
     optimize_ir(&cmds, &optimized);
 
-    ir_to_c(&optimized, c_code);
+    ir_to_c(&optimized, c_code, config);
 
     free(cmds.items);
     free(optimized.items);

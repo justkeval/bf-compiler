@@ -2,16 +2,23 @@
 #define _FILE_OPS_H
 
 #include <stdio.h>
+#include <stdbool.h>
+#include <errno.h>
 
 #include "strbuf.h"
 #include "da_append.h"
 
-void read_file(const char* filepath, StrBuf* buf) {
+bool read_file(const char* filepath, StrBuf* buf, char** err) {
     FILE* file = fopen(filepath, "r");
+    if (file == NULL) {
+        *err = strerror(errno);
+        return false;
+    }
     char c;
     while ((c = getc(file)) != EOF) {
         da_append(buf, c);
     }
+    return true;
 }
 
 void write_file(const char* filepath, StrBuf* buf) {
