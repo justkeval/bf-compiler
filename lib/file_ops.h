@@ -8,7 +8,7 @@
 #include "strbuf.h"
 #include "da_append.h"
 
-bool read_file(const char* filepath, StrBuf* buf, char** err) {
+static inline bool read_file(const char* filepath, StrBuf* buf, char** err) {
     FILE* file = fopen(filepath, "r");
     if (file == NULL) {
         *err = strerror(errno);
@@ -21,7 +21,7 @@ bool read_file(const char* filepath, StrBuf* buf, char** err) {
     return true;
 }
 
-void write_file(const char* filepath, StrBuf* buf) {
+static inline void write_file(const char* filepath, StrBuf* buf) {
     FILE* file = fopen(filepath, "w");
     for (int i = 0; i < buf->len; i++) {
         putc(buf->items[i], file);
