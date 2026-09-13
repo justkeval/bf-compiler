@@ -9,18 +9,19 @@
 #include "compiler_config.h"
 
 void ir_to_c(Commands *cmds, StrBuf *buf, CompilerConfig config) {
-    char* cell_type = "uint8_t";
+    char* cell_type = "unsigned char";
     if (config.cell_size == 8) {
-        cell_type = "uint8_t";
+        cell_type = "unsigned char";
     } else if (config.cell_size == 16) {
-        cell_type = "uint16_t";
+        cell_type = "unsigned short";
     } else if (config.cell_size == 32) {
-        cell_type = "uint32_t";
+        cell_type = "unsigned int";
     }
-    strbuf_append(buf, "#include <stdio.h>\n");
-    strbuf_append(buf, "#include <stdint.h>\n");
     strbuf_append(buf, "#define MEM_SIZE ");
     strbuf_append_int(buf, config.memory_size);
+    strbuf_append(buf, "\n\n");
+    strbuf_append(buf, "int putchar(int);\n");
+    strbuf_append(buf, "int getchar(void);\n");
     strbuf_append(buf, "\n\n");
     strbuf_append(buf, "int main() {\n");
     strbuf_append(buf, "  ");
