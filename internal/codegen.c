@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "strbuf.h"
+#include "lib/strbuf.h"
 
 #include "ir.h"
 #include "compiler_config.h"

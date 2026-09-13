@@ -1,4 +1,4 @@
-#include "da_append.h"
+#include "lib/da_append.h"
 #include "ir.h"
 
 void optimize_ir(Commands *cmds, Commands *opt) {

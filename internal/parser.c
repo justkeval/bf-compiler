@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
-#include "strbuf.h"
-#include "da_append.h"
+#include "lib/strbuf.h"
+#include "lib/da_append.h"
 
 #include "errors.h"
 #include "ir.h"

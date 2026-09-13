@@ -2,15 +2,15 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "strbuf.h"
-#include "file_ops.h"
+#include "lib/strbuf.h"
+#include "lib/file_ops.h"
 
-#include "errors.h"
-#include "parser.c"
-#include "optimizer.c"
-#include "compiler.c"
-#include "compiler_config.h"
-#include "program_options.c"
+#include "internal/errors.h"
+#include "internal/parser.c"
+#include "internal/optimizer.c"
+#include "internal/codegen.c"
+#include "internal/compiler_config.h"
+#include "internal/program_options.c"
 
 bool compile_source_to_c(StrBuf* source, StrBuf* c_code, CompilerConfig config, Errors* errors);
 
